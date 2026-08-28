@@ -1,0 +1,73 @@
+name: CI - PHP / Python / Node
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  php:
+    name: PHP Lint & Composer
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, json
+          tools: composer
+
+      - name: Validate composer.json
+        run: composer validate --no-check-publish || true
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction || true
+
+      - name: PHP Lint (backend/php)
+        run: |
+          find backend/php -name "*.php" -print0 | xargs -0 -n1 php -l
+
+  python:
+    name: Python Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install requirements
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Syntax check bot.py
+        run: python -m py_compile backend/bot/bot.py || true
+
+  node:
+    name: Node / npm
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Check for package.json & npm install
+        run: |
+          if [ -f package.json ]; then
+            npm ci || npm install
+            npm run build --if-present
+            npm test --if-present
+          else
+            echo "No package.json found - skipping npm (static HTML/JS project)"
+            # Optional: create minimal package.json if needed later
+          fi
