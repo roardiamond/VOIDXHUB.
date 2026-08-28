@@ -12,7 +12,8 @@ document.getElementById("register-form").addEventListener("submit", async (e) =>
       phone: fd.get("phone"), password: fd.get("password"),
     });
     VX.setSession(res.token, res.user);
-    window.location.href = "/dashboard.html";
+    // Fix: use vxPath so redirect works under /www/ and root
+    window.location.href = vxPath("/dashboard.html");
   } catch (err) {
     alertEl.innerHTML = `<div class="alert alert-error">${escapeHtml(err.message)}</div>`;
   }
