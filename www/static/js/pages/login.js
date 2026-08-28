@@ -10,7 +10,14 @@ document.getElementById("login-form").addEventListener("submit", async (e) => {
     const res = await VX.post("/api/auth/login", { username: fd.get("identifier"), password: fd.get("password") });
     VX.setSession(res.token, res.user);
     const next = new URLSearchParams(window.location.search).get("next");
-    window.location.href = next || (res.user.role === "admin" ? "/admin.html" : "/dashboard.html");
+    // Fix: use vxPath so it works under /www/ and root
+    if (next) {
+      window.location.href = next;
+    } else if (res.user && res.user.role === "admin") {
+      window.location.href = vxPath("/admin.html");
+    } else {
+      window.location.href = vxPath("/dashboard.html");
+    }
   } catch (err) {
     alertEl.innerHTML = `<div class="alert alert-error">${escapeHtml(err.message)}</div>`;
   }
