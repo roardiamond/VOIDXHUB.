@@ -162,16 +162,28 @@ function renderFooter() {
 
 function requireAuth() {
   if (!VX.getToken()) {
-    window.location.href = vxPath("/login.html") + "?next=" + encodeURIComponent(window.location.pathname);
+    VX.clearSession();
+    window.location.replace(vxPath("/login.html") + "?next=" + encodeURIComponent(window.location.pathname + window.location.search));
     return false;
   }
   return true;
 }
 
+/**
+ * Strict admin gate.
+ * - No token / no user / role !== admin → clear session + hard redirect to login
+ * - Returns false so caller does NOT init the page
+ */
 function requireAdmin() {
+  const token = VX.getToken();
   const user = VX.getUser();
-  if (!VX.getToken() || !user || user.role !== "admin") {
-    window.location.href = vxPath("/login.html");
+
+  const ok = !!(token && user && user.role === "admin");
+
+  if (!ok) {
+    // Wipe any fake/stale localStorage so attacker can't just set role:admin
+    VX.clearSession();
+    window.location.replace(vxPath("/login.html") + "?next=" + encodeURIComponent(window.location.pathname));
     return false;
   }
   return true;
