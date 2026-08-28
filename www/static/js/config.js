@@ -1,9 +1,8 @@
 // =========================================================
-// VOIDXHUB TOURNAMENTS — App configuration
+// VOIDXHUB TOURNAMENTS — Website configuration
 // =========================================================
 
 window.VX_CONFIG = {
-  // Unified backend (website + app both use this)
   API_BASE_URL: "https://voidxhub-backend.onrender.com",
 
   APP_NAME: "VOIDXHUB",
