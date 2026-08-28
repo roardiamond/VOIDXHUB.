@@ -1,10 +1,30 @@
 // Page script for admin.html — tournament management, payment verification,
 // results publishing, and account security controls.
+//
+// Security:
+// 1. requireAdmin() checks token + role client-side and redirects if missing
+// 2. We also hit a protected admin API; 401/403 → clear session + redirect
+// 3. UI stays hidden (body.auth-pending) until both checks pass
 
-if (requireAdmin()) {
+(async function bootAdmin() {
+  // Client-side gate first
+  if (!requireAdmin()) return;
+
+  // Server-side gate: any protected admin endpoint
+  try {
+    await VX.get("/api/admin/stats");
+  } catch (err) {
+    // Token invalid, expired, or not actually admin
+    VX.clearSession();
+    window.location.replace(vxPath("/login.html") + "?next=" + encodeURIComponent(window.location.pathname));
+    return;
+  }
+
+  // Auth confirmed → unlock UI
+  document.body.classList.remove("auth-pending");
   renderNav("admin");
   init();
-}
+})();
 
 let gamesCache = [];
 
@@ -41,9 +61,11 @@ async function init() {
 
   document.getElementById("logout-everywhere-btn").addEventListener("click", async () => {
     if (!confirm("This logs you out on every device, including this one. Continue?")) return;
-    await VX.post("/api/auth/logout-everywhere", {});
+    try {
+      await VX.post("/api/auth/logout-everywhere", {});
+    } catch (e) {}
     VX.clearSession();
-    window.location.href = "/login.html";
+    window.location.replace(vxPath("/login.html"));
   });
 }
 
@@ -187,7 +209,7 @@ async function openManagePanel(tid) {
         <button class="btn btn-primary btn-sm" type="submit">Save settings</button>
       </form>
 
-      <h4 style="font-size:14px; text-transform:uppercase; letter-spacing:0.06em; color:var(--fog-dim); margin-top:28px;">Registrations &amp; payments</h4>
+      <h4 style="font-size:14px; text-transform:uppercase; letter-spacing:0.06em; color:var(--fog-dim); margin-top:28px;">Registrations & payments</h4>
       <table>
         <thead><tr><th>Team</th><th>User</th><th>Players</th><th>UTR</th><th>Status</th><th></th></tr></thead>
         <tbody>${regRows}</tbody>
