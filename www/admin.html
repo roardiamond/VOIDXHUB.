@@ -9,8 +9,28 @@
 <link rel="apple-touch-icon" href="static/icons/icon-192.png">
 <meta name="theme-color" content="#08080c">
 <link rel="stylesheet" href="static/css/style.css">
+<style>
+  /* Hide everything until auth passes */
+  body.auth-pending > *:not(#auth-gate) { display: none !important; }
+  #auth-gate {
+    display: none;
+    min-height: 60vh;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 12px;
+    color: var(--fog-dim, #888);
+    font-family: monospace;
+  }
+  body.auth-pending #auth-gate { display: flex; }
+</style>
 </head>
-<body>
+<body class="auth-pending">
+
+<div id="auth-gate">
+  <p>Verifying admin access…</p>
+  <p style="font-size:12px;">If this stays, you are not logged in as admin.</p>
+</div>
 
 <nav class="site-nav" id="site-nav"></nav>
 
