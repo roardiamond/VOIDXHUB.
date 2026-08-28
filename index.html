@@ -26,6 +26,7 @@
     .anim-item { opacity: 0; }
     .popup-enter { animation: popupIn 0.35s cubic-bezier(0.23,1,0.32,1); }
     @keyframes popupIn { from { opacity: 0; transform: scale(0.85) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+    .tourney-banner { background: linear-gradient(90deg, rgba(103,232,249,0.12), rgba(192,132,252,0.12)); border: 1px solid rgba(103,232,249,0.35); }
   </style>
 </head>
 <body>
@@ -36,7 +37,7 @@
 
     <div class="relative z-10 max-w-5xl px-6 py-16">
       <div class="anim-item mb-6">
-        <span class="inline-block px-5 py-2 rounded-full text-sm font-bold tracking-wider bg-cyan-500/10 border border-cyan-400/40 text-cyan-300">⚡ PREMIUM TOOLS HUB 2026</span>
+        <span class="inline-block px-5 py-2 rounded-full text-sm font-bold tracking-wider bg-cyan-500/10 border border-cyan-400/40 text-cyan-300">⚡ PREMIUM TOOLS + TOURNAMENTS 2026</span>
       </div>
 
       <h1 class="text-6xl sm:text-7xl md:text-8xl font-black tracking-[4px] md:tracking-[8px] glitch mb-4 anim-item">
@@ -45,16 +46,33 @@
 
       <p class="text-xl sm:text-2xl md:text-3xl text-cyan-300 mb-4 tracking-widest anim-item">UNDETECTABLE • POWERFUL • PREMIUM</p>
       <p class="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto leading-relaxed anim-item">
-        Welcome to the underground hub for high-success automation tools.<br class="hidden sm:block">Built for winners. Designed for the elite.
+        Underground tools hub + live paid scrims for BGMI, Free Fire, Valorant & more.<br class="hidden sm:block">Website aur app dono same backend pe sync hain.
       </p>
 
-      <div class="mt-12 flex flex-col sm:flex-row gap-5 justify-center items-center anim-item">
-        <button onclick="window.location.href='pages/shop/tools.html'" class="neon-btn px-10 py-5 text-lg font-bold border-2 border-cyan-400 bg-transparent rounded-2xl hover:bg-cyan-400 hover:text-black w-full sm:w-auto">🔥 BROWSE TOOLS</button>
-        <button onclick="window.location.href='pages/account/login.html'" class="neon-btn px-10 py-5 text-lg font-bold border-2 border-purple-500 bg-transparent rounded-2xl hover:bg-purple-500 hover:text-white w-full sm:w-auto">🔐 LOGIN / ACCOUNT</button>
-        <button onclick="showTGPopup()" class="neon-btn px-10 py-5 text-lg font-bold border-2 border-pink-500 bg-transparent rounded-2xl hover:bg-pink-500 hover:text-white w-full sm:w-auto">💬 JOIN COMMUNITY</button>
+      <!-- Live tournaments strip -->
+      <div class="mt-10 anim-item">
+        <a href="/www/tournaments.html" class="tourney-banner block rounded-2xl px-6 py-4 hover:scale-[1.02] transition">
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="text-left">
+              <div class="text-xs text-cyan-400 tracking-widest font-bold mb-1">🏆 LIVE TOURNAMENTS</div>
+              <div class="text-sm sm:text-base text-gray-200">Paid & free scrims • Room ID after verify • Synced with Android app</div>
+            </div>
+            <span class="px-5 py-2 rounded-xl bg-cyan-500 text-black text-sm font-black tracking-wider whitespace-nowrap">OPEN LOBBIES →</span>
+          </div>
+        </a>
       </div>
 
-      <div class="mt-20 grid grid-cols-3 gap-4 max-w-lg mx-auto anim-item">
+      <div class="mt-10 flex flex-col sm:flex-row gap-5 justify-center items-center anim-item">
+        <button onclick="window.location.href='pages/shop/tools.html'" class="neon-btn px-10 py-5 text-lg font-bold border-2 border-cyan-400 bg-transparent rounded-2xl hover:bg-cyan-400 hover:text-black w-full sm:w-auto">🔥 BROWSE TOOLS</button>
+        <button onclick="window.location.href='/www/admin.html'" class="neon-btn px-10 py-5 text-lg font-bold border-2 border-emerald-400 bg-transparent rounded-2xl hover:bg-emerald-400 hover:text-black w-full sm:w-auto">🛠 ADMIN / CREATE TOURNEY</button>
+        <button onclick="window.location.href='pages/account/login.html'" class="neon-btn px-10 py-5 text-lg font-bold border-2 border-purple-500 bg-transparent rounded-2xl hover:bg-purple-500 hover:text-white w-full sm:w-auto">🔐 LOGIN</button>
+      </div>
+
+      <div class="mt-8 anim-item">
+        <button onclick="showTGPopup()" class="text-sm text-pink-400 hover:text-pink-300 tracking-wider">💬 JOIN COMMUNITY</button>
+      </div>
+
+      <div class="mt-16 grid grid-cols-3 gap-4 max-w-lg mx-auto anim-item">
         <div class="text-center"><div class="text-2xl sm:text-3xl font-black stat-number" data-count="50">0</div><div class="text-xs text-gray-500 mt-1 tracking-wider">TOOLS</div></div>
         <div class="text-center border-x border-white/10"><div class="text-2xl sm:text-3xl font-black stat-number" data-count="10000">0</div><div class="text-xs text-gray-500 mt-1 tracking-wider">USERS</div></div>
         <div class="text-center"><div class="text-2xl sm:text-3xl font-black stat-number" data-count="99">0</div><div class="text-xs text-gray-500 mt-1 tracking-wider">SUCCESS</div></div>
@@ -62,7 +80,7 @@
 
       <div class="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-5 max-w-3xl mx-auto">
         <div class="feature-card rounded-2xl p-5 anim-item"><div class="text-3xl mb-3">🛡️</div><h3 class="font-bold text-cyan-300 mb-1">Undetectable</h3><p class="text-xs text-gray-400">Safe & clean configs</p></div>
-        <div class="feature-card rounded-2xl p-5 anim-item"><div class="text-3xl mb-3">⚡</div><h3 class="font-bold text-purple-300 mb-1">Lightning Fast</h3><p class="text-xs text-gray-400">Instant delivery</p></div>
+        <div class="feature-card rounded-2xl p-5 anim-item"><div class="text-3xl mb-3">🏆</div><h3 class="font-bold text-emerald-300 mb-1">Live Scrims</h3><p class="text-xs text-gray-400">Web + App synced</p></div>
         <div class="feature-card rounded-2xl p-5 anim-item"><div class="text-3xl mb-3">🎯</div><h3 class="font-bold text-pink-300 mb-1">High Success</h3><p class="text-xs text-gray-400">Proven results</p></div>
       </div>
 
@@ -100,7 +118,6 @@
     }
     createParticles();
 
-    // Anime.js staggered entrance (animejs.com style)
     anime({
       targets: '.anim-item',
       opacity: [0, 1],
@@ -110,7 +127,6 @@
       easing: 'easeOutExpo'
     });
 
-    // Glitch pulse on title
     anime({
       targets: '.glitch',
       textShadow: [
@@ -123,7 +139,6 @@
       easing: 'easeInOutSine'
     });
 
-    // Count-up stats
     document.querySelectorAll('.stat-number').forEach(el => {
       const target = parseInt(el.getAttribute('data-count'));
       const isUsers = target >= 1000;
@@ -141,7 +156,6 @@
       });
     });
 
-    // Button hover spring-like
     document.querySelectorAll('.neon-btn').forEach(btn => {
       btn.addEventListener('mouseenter', () => {
         anime({ targets: btn, scale: 1.08, translateY: -4, duration: 350, easing: 'easeOutElastic(1, .6)' });
@@ -151,7 +165,6 @@
       });
     });
 
-    // Feature cards hover
     document.querySelectorAll('.feature-card').forEach(card => {
       card.addEventListener('mouseenter', () => {
         anime({ targets: card, translateY: -12, duration: 400, easing: 'easeOutExpo' });
