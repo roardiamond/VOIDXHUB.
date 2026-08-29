@@ -80,12 +80,12 @@ function paymentBadge(status) {
 
 function slotBarHtml(filled, total, ticks) {
   ticks = ticks || Math.min(total, 24);
-  const filledTicks = Math.round((filled / total) * ticks);
-  let html = "";
+  const filledTicks = Math.round((filled / Math.max(total, 1)) * ticks);
+  let spans = "";
   for (let i = 0; i < ticks; i++) {
-    html += `<span class="slot-tick ${i < filledTicks ? "filled" : ""}"></span>`;
+    spans += `<span class="${i < filledTicks ? "filled" : ""}"></span>`;
   }
-  return html;
+  return `<div class="slot-bar">${spans}</div>`;
 }
 
 function escapeHtml(str) {
@@ -94,7 +94,22 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
-// ---------- Nav / footer ----------
+const EMBLEM_PALETTE = [
+  "#7b5cff", "#33f5d5", "#ff9640", "#ff5470", "#5cc8ff", "#c46bff",
+];
+
+function emblemColor(name) {
+  let hash = 0;
+  const s = String(name || "");
+  for (let i = 0; i < s.length; i++) hash = (hash * 31 + s.charCodeAt(i)) >>> 0;
+  return EMBLEM_PALETTE[hash % EMBLEM_PALETTE.length];
+}
+
+// ---------- Nav / footer (path-aware for /www) ----------
+
+function vx(path) {
+  return (typeof window.vxUrl === "function") ? window.vxUrl(path) : path;
+}
 
 function renderNav(activePage) {
   const user = VX.getUser();
@@ -102,12 +117,12 @@ function renderNav(activePage) {
   if (!el) return;
 
   const links = [
-    { href: "/index.html", label: "Home", key: "home" },
-    { href: "/tournaments.html", label: "Tournaments", key: "tournaments" },
-    { href: "/leaderboard.html", label: "Leaderboard", key: "leaderboard" },
+    { href: vx("/index.html"), label: "Home", key: "home" },
+    { href: vx("/tournaments.html"), label: "Tournaments", key: "tournaments" },
+    { href: vx("/leaderboard.html"), label: "Leaderboard", key: "leaderboard" },
   ];
-  if (user) links.push({ href: "/dashboard.html", label: "Dashboard", key: "dashboard" });
-  if (user && user.role === "admin") links.push({ href: "/admin.html", label: "Admin", key: "admin" });
+  if (user) links.push({ href: vx("/dashboard.html"), label: "Dashboard", key: "dashboard" });
+  if (user && user.role === "admin") links.push({ href: vx("/admin.html"), label: "Admin", key: "admin" });
 
   const linksHtml = links.map(
     (l) => `<a href="${l.href}" class="${l.key === activePage ? "active" : ""}">${l.label}</a>`
@@ -116,14 +131,14 @@ function renderNav(activePage) {
   const ctaHtml = user
     ? `<span class="mono" style="font-size:13px;color:var(--fog-dim)">@${escapeHtml(user.username)}</span>
        <button class="btn btn-ghost btn-sm" id="nav-logout">Log out</button>`
-    : `<a href="/login.html" class="btn btn-ghost btn-sm">Log in</a>
-       <a href="/register.html" class="btn btn-primary btn-sm">Sign up</a>`;
+    : `<a href="${vx("/login.html")}" class="btn btn-ghost btn-sm">Log in</a>
+       <a href="${vx("/register.html")}" class="btn btn-primary btn-sm">Sign up</a>`;
 
   const brandName = (window.VX_CONFIG && window.VX_CONFIG.APP_NAME) || "VOIDXHUB";
 
   el.innerHTML = `
     <div class="wrap">
-      <a href="/index.html" class="brand">${escapeHtml(brandName)}</a>
+      <a href="${vx("/index.html")}" class="brand">${escapeHtml(brandName)}</a>
       <div class="nav-links">${linksHtml}</div>
       <div class="nav-cta">${ctaHtml}</div>
     </div>`;
@@ -132,7 +147,7 @@ function renderNav(activePage) {
   if (logoutBtn) {
     logoutBtn.addEventListener("click", () => {
       VX.clearSession();
-      window.location.href = "/index.html";
+      window.location.href = vx("/index.html");
     });
   }
 }
@@ -149,7 +164,7 @@ function renderFooter() {
 
 function requireAuth() {
   if (!VX.getToken()) {
-    window.location.href = "/login.html?next=" + encodeURIComponent(window.location.pathname);
+    window.location.href = vx("/login.html") + "?next=" + encodeURIComponent(window.location.pathname);
     return false;
   }
   return true;
@@ -158,7 +173,7 @@ function requireAuth() {
 function requireAdmin() {
   const user = VX.getUser();
   if (!VX.getToken() || !user || user.role !== "admin") {
-    window.location.href = "/login.html";
+    window.location.href = vx("/login.html");
     return false;
   }
   return true;
