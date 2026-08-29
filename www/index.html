@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VOIDXHUB — Esports Scrims & Tournaments</title>
-<link rel="manifest" href="manifest.json">
-<link rel="icon" href="static/icons/icon-192.png">
-<link rel="apple-touch-icon" href="static/icons/icon-192.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/static/icons/icon-192.png">
+<link rel="apple-touch-icon" href="/static/icons/icon-192.png">
 <meta name="theme-color" content="#08080c">
-<link rel="stylesheet" href="static/css/style.css">
+<link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
 
@@ -26,8 +26,8 @@
       slot is confirmed.
     </p>
     <div style="margin-top:26px; display:flex; gap:14px;">
-      <a href="tournaments.html" class="btn btn-primary">Browse tournaments</a>
-      <a href="register.html" class="btn btn-ghost">Create an account</a>
+      <a href="/tournaments.html" class="btn btn-primary">Browse tournaments</a>
+      <a href="/register.html" class="btn btn-ghost">Create an account</a>
     </div>
   </div>
 </header>
@@ -48,7 +48,7 @@
         <h2 style="font-size:28px;">Open for registration</h2>
         <p>Confirm your slot before the room fills up.</p>
       </div>
-      <a href="tournaments.html" class="btn btn-ghost btn-sm">View all →</a>
+      <a href="/tournaments.html" class="btn btn-ghost btn-sm">View all →</a>
     </div>
     <div class="grid" id="featured-grid">
       <p class="mono" style="color:var(--fog-dim)">Loading tournaments…</p>
@@ -59,7 +59,7 @@
 <section class="section" style="padding-top:0;">
   <div class="wrap">
     <div class="section-head"><div><h2 style="font-size:28px;">Games we run</h2><p>Every title currently open for tournaments.</p></div>
-      <a href="tournaments.html" class="btn btn-ghost btn-sm">Browse all →</a>
+      <a href="/tournaments.html" class="btn btn-ghost btn-sm">Browse all →</a>
     </div>
     <div class="games-grid" id="games-grid">
       <p class="mono" style="color:var(--fog-dim)">Loading…</p>
@@ -97,9 +97,76 @@
 
 <footer id="site-footer"></footer>
 
-<script src="static/js/config.js"></script>
-<script src="static/js/api.js"></script>
-<script src="static/js/ui.js"></script>
-<script src="static/js/pages/home.js"></script>
+<script src="/static/js/config.js"></script>
+<script src="/static/js/app.js"></script>
+<script>
+renderNav("home");
+
+async function loadHome() {
+  try {
+    const [tournaments, games, stats] = await Promise.all([
+      VX.get("/api/tournaments?status=upcoming&limit=6"),
+      VX.get("/api/games"),
+      VX.get("/api/stats").catch(() => null),
+    ]);
+
+    if (stats) {
+      document.querySelector("#hud-stats").innerHTML = `
+        <div class="hud-stat"><span class="val mono">${stats.open_slots || "—"}</span><span class="label">OpenSlots</span></div>
+        <div class="hud-stat"><span class="val mono">${stats.upcoming || "—"}</span><span class="label">Upcoming</span></div>
+        <div class="hud-stat"><span class="val mono">${stats.games_live || "—"}</span><span class="label">Games Live</span></div>
+        <div class="hud-stat"><span class="val mono">${fmtMoney(stats.total_prize || 0)}</span><span class="label">Total Prize Pool</span></div>
+      `;
+    }
+
+    const grid = document.getElementById("featured-grid");
+    if (!tournaments || !tournaments.length) {
+      grid.innerHTML = `<p class="mono" style="color:var(--fog-dim)">No open tournaments right now. Check back soon.</p>`;
+    } else {
+      grid.innerHTML = tournaments.map(t => cardHtml(t)).join("");
+    }
+
+    const ggrid = document.getElementById("games-grid");
+    if (games && games.length) {
+      ggrid.innerHTML = games.map(g => `
+        <a href="/tournaments.html?game=${encodeURIComponent(g.slug)}" class="game-tile">
+          <div class="emblem" style="background:${emblemColor(g.name)}">${g.name.slice(0,2).toUpperCase()}</div>
+          <div>
+            <div style="font-weight:600">${escapeHtml(g.name)}</div>
+            <div class="mono" style="font-size:12px;color:var(--fog-dim)">${g.tournament_count || 0} open</div>
+          </div>
+        </a>`).join("");
+    }
+  } catch (e) {
+    console.error(e);
+    document.getElementById("featured-grid").innerHTML = `<p class="mono" style="color:var(--fog-dim)">Could not load tournaments. Is the backend up?</p>`;
+  }
+}
+
+function cardHtml(t) {
+  const filled = t.slots_filled || 0;
+  return `
+  <a href="/tournament.html?id=${t.id}" class="card">
+    <div class="card-top">
+      <span class="eyebrow mono">${escapeHtml(t.game_name || "")} · ${escapeHtml(t.mode || "")}</span>
+      ${statusBadge(t.status)}
+    </div>
+    <h3>${escapeHtml(t.title)}</h3>
+    <p style="color:var(--fog-dim);font-size:14px;margin:8px 0 12px">${escapeHtml((t.description || "").slice(0, 90))}${(t.description || "").length > 90 ? "…" : ""}</p>
+    <div class="card-meta">
+      <span class="mono">${fmtMoney(t.entry_fee)}</span>
+      <span class="mono">Prize ${fmtMoney(t.prize_pool)}</span>
+      <span class="mono">${fmtDate(t.match_date)}</span>
+    </div>
+    <div style="margin-top:12px">${slotBarHtml(filled, t.slots_total || 25)}</div>
+    <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center">
+      <span class="badge ${t.entry_fee > 0 ? "badge-paid" : "badge-free"}">${t.entry_fee > 0 ? "Paid entry" : "Free entry"}</span>
+      <span class="mono" style="font-size:13px; color:var(--signal-violet);">View →</span>
+    </div>
+  </a>`;
+}
+
+loadHome();
+</script>
 </body>
 </html>
