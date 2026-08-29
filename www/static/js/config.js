@@ -1,35 +1,20 @@
 // =========================================================
-// VOIDXHUB TOURNAMENTS — Website configuration
+// VOIDXHUB TOURNAMENTS — App configuration
+// This is the ONE file to edit when you deploy or rebrand.
 // =========================================================
 
 window.VX_CONFIG = {
+  // Full HTTPS URL of your backend API, no trailing slash.
+  // In the browser build (running from the same Flask server) this can stay
+  // empty — requests will just hit relative paths like /api/... on the same
+  // origin. For the packaged Android/iOS app, the app bundle is loaded from
+  // a local/app origin, so this MUST point at your real, publicly hosted
+  // backend, e.g. "https://api.yourdomain.com".
   API_BASE_URL: "https://voidxhub-backend.onrender.com",
 
+  // Shown in the nav bar and browser tab titles.
   APP_NAME: "VOIDXHUB",
+
+  // Used on the login/register pages and footer.
   SUPPORT_EMAIL: "support@voidxhub.in",
-  FOOTER_NOTE: "Entry fees are non-refundable once a slot is confirmed.",
 };
-
-// When hosted under /www/ on voidxhub.in, links must include /www/
-// When served as root by Flask (or Capacitor), paths stay relative to current folder.
-(function () {
-  var base = "";
-  try {
-    if (location.pathname.indexOf("/www/") !== -1 || location.pathname.indexOf("/www") === 0) {
-      base = "/www";
-    }
-  } catch (e) {}
-
-  window.VX_NAV_LINKS = [
-    { href: base + "/index.html", label: "Home", key: "home", auth: "public" },
-    { href: base + "/tournaments.html", label: "Tournaments", key: "tournaments", auth: "public" },
-    { href: base + "/leaderboard.html", label: "Leaderboard", key: "leaderboard", auth: "public" },
-    { href: base + "/dashboard.html", label: "Dashboard", key: "dashboard", auth: "user" },
-    { href: base + "/admin.html", label: "Admin", key: "admin", auth: "admin" },
-  ];
-
-  window.VX_AUTH_LINKS = {
-    login: base + "/login.html",
-    register: base + "/register.html",
-  };
-})();
