@@ -1,20 +1,28 @@
 // =========================================================
 // VOIDXHUB TOURNAMENTS — App configuration
-// This is the ONE file to edit when you deploy or rebrand.
 // =========================================================
 
 window.VX_CONFIG = {
-  // Full HTTPS URL of your backend API, no trailing slash.
-  // In the browser build (running from the same Flask server) this can stay
-  // empty — requests will just hit relative paths like /api/... on the same
-  // origin. For the packaged Android/iOS app, the app bundle is loaded from
-  // a local/app origin, so this MUST point at your real, publicly hosted
-  // backend, e.g. "https://api.yourdomain.com".
   API_BASE_URL: "https://voidxhub-backend.onrender.com",
-
-  // Shown in the nav bar and browser tab titles.
   APP_NAME: "VOIDXHUB",
-
-  // Used on the login/register pages and footer.
   SUPPORT_EMAIL: "support@voidxhub.in",
 };
+
+// Auto-detect if we are under /www/ (GitHub Pages) or root (Flask / Capacitor)
+(function () {
+  var base = "";
+  try {
+    var p = location.pathname || "";
+    if (p.indexOf("/www/") !== -1 || p === "/www" || p.indexOf("/www") === 0) {
+      base = "/www";
+    }
+  } catch (e) {}
+  window.VX_BASE = base;
+
+  // Helper so links always work under /www or root
+  window.vxUrl = function (path) {
+    if (!path) return base || "/";
+    if (path.charAt(0) !== "/") path = "/" + path;
+    return base + path;
+  };
+})();
